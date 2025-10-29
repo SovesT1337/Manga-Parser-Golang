@@ -39,7 +39,7 @@ func main() {
 	defer cancel()
 
 	// Start scheduler
-	sched := &scheduler.Runner{BotURL: botURL, ChannelID: c.SchedulerTelegramChannelID, IntervalSec: c.SchedulerIntervalSec}
+	sched := &scheduler.Runner{BotURL: botURL, ChannelID: c.SchedulerTelegramChannelID, IntervalSec: c.SchedulerIntervalSec, SubscribeURL: c.SubscribeLinkURL}
 	go sched.Run(ctx)
 
 	// Start bot updates loop

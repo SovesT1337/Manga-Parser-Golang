@@ -12,9 +12,10 @@ import (
 )
 
 type Runner struct {
-	BotURL      string
-	ChannelID   int64
-	IntervalSec int
+	BotURL       string
+	ChannelID    int64
+	IntervalSec  int
+	SubscribeURL string
 }
 
 func (r *Runner) Run(ctx context.Context) {
@@ -40,7 +41,7 @@ func (r *Runner) Run(ctx context.Context) {
 				continue
 			}
 			// Build message text with meta fields
-			text := buildMessageText(item)
+			text := r.buildMessageText(item)
 			// Send message with large preview shown below text
 			_ = telegram.SendMessageWithPreview(r.BotURL, r.ChannelID, text, item.UrlTelegraph, true, false)
 			_ = database.ContentMarkSent(item.ID)
@@ -48,7 +49,7 @@ func (r *Runner) Run(ctx context.Context) {
 	}
 }
 
-func buildMessageText(item database.Content) string {
+func (r *Runner) buildMessageText(item database.Content) string {
 	// Compose message using HTML formatting (safer around entities)
 	b := strings.Builder{}
 	if item.Name != "" && item.UrlTelegraph != "" {
@@ -87,6 +88,13 @@ func buildMessageText(item database.Content) string {
 			}
 			b.WriteString("\n")
 		}
+	}
+	if r.SubscribeURL != "" {
+		b.WriteString("\n")
+		b.WriteString("Подписывайся: ")
+		b.WriteString("<a href=\"")
+		b.WriteString(escapeHTML(r.SubscribeURL))
+		b.WriteString("\">Niko-San</a>")
 	}
 	return b.String()
 }

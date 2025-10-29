@@ -19,6 +19,7 @@ type Config struct {
 	SchedulerIntervalSec       int
 	SchedulerTelegramChannelID int64
 	LoggingLevel               string
+	SubscribeLinkURL           string
 }
 
 func Load() (*Config, error) {
@@ -64,6 +65,7 @@ func Load() (*Config, error) {
 	}
 
 	c.LoggingLevel = getEnv("LOG_LEVEL", "INFO")
+	c.SubscribeLinkURL = getEnv("SUBSCRIBE_LINK_URL", "")
 	return c, nil
 }
 
