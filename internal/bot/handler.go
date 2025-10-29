@@ -36,6 +36,16 @@ func (h *Handler) Handle(ctx context.Context, u telegram.Update) {
 		userID = int(u.Message.From.ID)
 	}
 
+	// Access control: only administrators may interact with the bot
+	tgUserID := chatID
+	if u.Message.From != nil {
+		tgUserID = u.Message.From.ID
+	}
+	if ok, _ := database.AdminExists(tgUserID); !ok {
+		_ = telegram.SendMessage(h.botURL, chatID, "Бот доступен только администраторам.")
+		return
+	}
+
 	if strings.HasPrefix(text, "/") {
 		h.handleCommand(ctx, chatID, userID, text)
 		return

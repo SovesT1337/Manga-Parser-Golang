@@ -12,8 +12,10 @@ func (h *Handler) handleAwaitLink(ctx context.Context, chatID int64, userID int,
 		_ = telegram.SendMessage(h.botURL, chatID, "Пришлите корректную ссылку (http/https).")
 		return
 	}
-	_ = telegram.SendMessage(h.botURL, chatID, "Обрабатываю ссылку...")
-	if exists, _ := database.ContentExistsByURL(text); !exists {
-		_, _ = database.ContentCreateNew(text)
+	if exists, _ := database.ContentExistsByURL(text); exists {
+		_ = telegram.SendMessage(h.botURL, chatID, "Такая ссылка уже есть в базе.")
+		return
 	}
+	_ = telegram.SendMessage(h.botURL, chatID, "Обрабатываю ссылку...")
+	_, _ = database.ContentCreateNew(text)
 }
