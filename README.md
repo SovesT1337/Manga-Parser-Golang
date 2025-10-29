@@ -10,6 +10,7 @@
 - Создаёт страницу в Telegraph c заголовком и списком изображений
 - Сохраняет метаданные и служебную информацию в PostgreSQL
 - Планирует и отправляет сообщение в Telegram‑канал с красивым оформлением и большим предпросмотром ссылки (ниже текста)
+- Подтверждение администратором перед постингом: после парсинга бот отправляет превью поста администраторам с кнопками «Подтвердить» и «Отклонить». При подтверждении пост ставится в очередь на публикацию, при отклонении помечается как отменённый.
 
 ## Архитектура
 
@@ -84,10 +85,25 @@ go run cmd/telegram-bot/main.go
 - `tags_json` — массив тегов в JSON
 - `url_hentaichan` — исходный URL
 - `url_telegraph` — ссылка на опубликованную страницу в Telegraph
-- `status` — `New` | `Processing` | `Parsed` | `Sent` | `Error`
-- `scheduled_at`, `sent_at`, `last_error`, `created_at`, `updated_at`
+- `status` — `New` | `Processing` | `Parsed` | `Confirmed` | `Cancelled` | `Sent` | `Error`
+- `scheduled_at`, `sent_at`, `review_sent_at`, `last_error`, `created_at`, `updated_at`
 
 Миграции выполняются автоматически через GORM `AutoMigrate` при старте приложения.
+
+### Администраторы
+
+Таблица `administrators` хранит список администраторов, которые получают превью для подтверждения:
+
+- `id` — PK
+- `telegram_user_id` — Telegram ID пользователя (уникальный)
+- `username` — Никнейм (необязательно)
+- `created_at`, `updated_at`
+
+Добавляйте администраторов через БД, например:
+
+```sql
+INSERT INTO administrators (telegram_user_id, username) VALUES (123456789, 'admin');
+```
 
 ## Импорт ссылок на парсинг
 

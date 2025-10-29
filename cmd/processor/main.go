@@ -52,34 +52,8 @@ func main() {
 			continue
 		}
 		logger.Info("PROCESSOR", "created telegraph page url=%s", url)
-		last, _ := database.ContentLastScheduledAt()
-		base := time.Now()
-		if last != nil {
-			base = *last
-		}
-		sched := nextMoscowSlotAfter(base)
-		logger.Info("PROCESSOR", "scheduling for %s", sched)
-		_ = database.ContentMarkParsed(content.ID, url, sched)
+		_ = database.ContentMarkParsed(content.ID, url)
 		logger.Info("PROCESSOR", "marked parsed url=%s", content.UrlHentaichan)
 		logger.Info("PROCESSOR", "processed url elapsed=%s", time.Since(start))
 	}
-}
-
-func nextMoscowSlotAfter(t time.Time) time.Time {
-	loc, _ := time.LoadLocation("Europe/Moscow")
-	tt := t.In(loc)
-	y, m, d := tt.Date()
-	slots := []time.Time{
-		time.Date(y, m, d, 12, 0, 0, 0, loc),
-		time.Date(y, m, d, 17, 0, 0, 0, loc),
-		time.Date(y, m, d, 21, 0, 0, 0, loc),
-	}
-	for _, s := range slots {
-		if s.After(tt) {
-			return s
-		}
-	}
-	nd := tt.Add(24 * time.Hour)
-	y, m, d = nd.Date()
-	return time.Date(y, m, d, 12, 0, 0, 0, loc)
 }

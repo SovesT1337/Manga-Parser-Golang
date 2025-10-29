@@ -15,7 +15,7 @@ func InitDB(dsn string) error {
 	if err != nil {
 		return fmt.Errorf("connect db: %w", err)
 	}
-	if err := DB.AutoMigrate(&Content{}); err != nil {
+	if err := DB.AutoMigrate(&Content{}, &Administrator{}); err != nil {
 		return fmt.Errorf("migrate: %w", err)
 	}
 	return nil

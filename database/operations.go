@@ -57,11 +57,10 @@ func ContentClaimNew() (*Content, error) {
 	return &c, nil
 }
 
-func ContentMarkParsed(id uint, telegraphURL string, scheduleAt time.Time) error {
+func ContentMarkParsed(id uint, telegraphURL string) error {
 	return DB.Model(&Content{}).Where("id = ?", id).Updates(map[string]any{
 		"url_telegraph": telegraphURL,
 		"status":        "Parsed",
-		"scheduled_at":  scheduleAt,
 		"last_error":    "",
 	}).Error
 }
@@ -78,7 +77,7 @@ func ContentUpdateMeta(id uint, name, series, author, translator, tagsJSON strin
 
 func ContentFindDue(limit int) ([]Content, error) {
 	var rows []Content
-	q := DB.Where("status = ? AND scheduled_at <= NOW()", "Parsed").Order("scheduled_at asc")
+	q := DB.Where("status = ? AND scheduled_at <= NOW()", "Confirmed").Order("scheduled_at asc")
 	if limit > 0 {
 		q = q.Limit(limit)
 	}
@@ -90,7 +89,7 @@ func ContentFindDue(limit int) ([]Content, error) {
 
 func ContentLastScheduledAt() (*time.Time, error) {
 	var row Content
-	res := DB.Where("status = ? AND scheduled_at IS NOT NULL", "Parsed").Order("scheduled_at desc").Limit(1).First(&row)
+	res := DB.Where("status = ? AND scheduled_at IS NOT NULL", "Confirmed").Order("scheduled_at desc").Limit(1).First(&row)
 	if errors.Is(res.Error, gorm.ErrRecordNotFound) {
 		return nil, nil
 	}
@@ -113,4 +112,67 @@ func ContentMarkError(id uint, errMsg string) error {
 		"status":     "Error",
 		"last_error": errMsg,
 	}).Error
+}
+
+func ContentFindParsedPendingReview(limit int) ([]Content, error) {
+	var rows []Content
+	q := DB.Where("status = ? AND review_sent_at IS NULL", "Parsed").Order("id asc")
+	if limit > 0 {
+		q = q.Limit(limit)
+	}
+	if err := q.Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+func ContentMarkReviewSent(id uint) error {
+	now := time.Now()
+	return DB.Model(&Content{}).Where("id = ?", id).Updates(map[string]any{
+		"review_sent_at": &now,
+	}).Error
+}
+
+func ContentMarkConfirmed(id uint) error {
+	return DB.Model(&Content{}).Where("id = ?", id).Updates(map[string]any{
+		"status": "Confirmed",
+	}).Error
+}
+
+func ContentMarkCancelled(id uint) error {
+	return DB.Model(&Content{}).Where("id = ?", id).Updates(map[string]any{
+		"status": "Cancelled",
+	}).Error
+}
+
+func ContentMarkConfirmedAndSchedule(id uint, scheduleAt time.Time) error {
+	return DB.Model(&Content{}).Where("id = ?", id).Updates(map[string]any{
+		"status":       "Confirmed",
+		"scheduled_at": scheduleAt,
+		"last_error":   "",
+	}).Error
+}
+
+// Administrators
+
+func AdminExists(userID int64) (bool, error) {
+	var count int64
+	res := DB.Model(&Administrator{}).Where("telegram_user_id = ?", userID).Count(&count)
+	if res.Error != nil {
+		return false, res.Error
+	}
+	return count > 0, nil
+}
+
+func AdminList() ([]Administrator, error) {
+	var rows []Administrator
+	if err := DB.Order("id asc").Find(&rows).Error; err != nil {
+		return nil, err
+	}
+	return rows, nil
+}
+
+func AdminAdd(userID int64, username string) error {
+	a := &Administrator{TelegramUserID: userID, Username: username}
+	return DB.Create(a).Error
 }

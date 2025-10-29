@@ -71,3 +71,31 @@ func SendMessageWithPreview(botURL string, chatID int64, text string, previewURL
 	logger.TelegramInfo("Сообщение отправлено")
 	return nil
 }
+
+func SendMessageWithPreviewAndKeyboard(botURL string, chatID int64, text string, previewURL string, large bool, showAbove bool, markup InlineKeyboardMarkup) error {
+	body := sendMessage{
+		ChatId:    chatID,
+		Text:      text,
+		ParseMode: "HTML",
+		LinkPreview: &LinkPreviewOptions{
+			URL:              previewURL,
+			PreferLargeMedia: large,
+			ShowAboveText:    showAbove,
+		},
+		ReplyMarkup: markup,
+	}
+	buf, _ := json.Marshal(body)
+	resp, err := http.Post(botURL+"/sendMessage", "application/json", bytes.NewBuffer(buf))
+	if err != nil {
+		logger.TelegramError("Отправка сообщения: %v", err)
+		return appErr.NewNetworkError("Ошибка отправки", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode >= 400 {
+		body, _ := io.ReadAll(resp.Body)
+		logger.TelegramError("Ошибка API (код %d): %s", resp.StatusCode, string(body))
+		return appErr.NewTelegramError("Ошибка API Telegram", nil)
+	}
+	logger.TelegramInfo("Сообщение отправлено")
+	return nil
+}

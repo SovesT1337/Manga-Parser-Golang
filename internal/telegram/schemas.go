@@ -1,8 +1,9 @@
 package telegram
 
 type Update struct {
-	UpdateID int      `json:"update_id"`
-	Message  *Message `json:"message,omitempty"`
+	UpdateID int            `json:"update_id"`
+	Message  *Message       `json:"message,omitempty"`
+	Callback *CallbackQuery `json:"callback_query,omitempty"`
 }
 
 type Message struct {
@@ -27,4 +28,23 @@ type User struct {
 type telegramResponse struct {
 	Ok     bool     `json:"ok"`
 	Result []Update `json:"result"`
+}
+
+// Inline keyboard support
+
+type InlineKeyboardButton struct {
+	Text         string `json:"text"`
+	CallbackData string `json:"callback_data,omitempty"`
+	URL          string `json:"url,omitempty"`
+}
+
+type InlineKeyboardMarkup struct {
+	InlineKeyboard [][]InlineKeyboardButton `json:"inline_keyboard"`
+}
+
+type CallbackQuery struct {
+	ID      string   `json:"id"`
+	From    User     `json:"from"`
+	Message *Message `json:"message,omitempty"`
+	Data    string   `json:"data,omitempty"`
 }
