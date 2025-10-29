@@ -2,21 +2,21 @@ package database
 
 import (
 	"time"
-	
-	
 )
 
-// Модель для хранения контента
-type HContent struct {
+type Content struct {
 	ID            uint `gorm:"primaryKey"`
 	Name          string
-	UrlHentaichan string `gorm:"unique;not null"` // Уникальный индекс
+	Series        string
+	Author        string
+	Translator    string
+	TagsJSON      string `gorm:"type:text"`
+	UrlHentaichan string `gorm:"uniqueIndex;not null"`
 	UrlTelegraph  string
+	Status        string     `gorm:"type:varchar(16);index"` // New, Parsed, Sent, Error
+	LastError     string     `gorm:"type:text"`
+	ScheduledAt   *time.Time `gorm:"index"`
+	SentAt        *time.Time
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
-}
-
-// Кастомное имя таблицы
-func (HContent) TableName() string {
-	return "hentai_content"
 }

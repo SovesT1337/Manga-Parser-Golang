@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">       <title>Цена Славы - Часть 2 (стр 44 - 65) читать онлайн</title><link rel="stylesheet" type="text/css" href="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/viewonline.css"><script src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/jquery.js.Без названия"></script><script>function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+if (getCookie("css2")) {
+    document.querySelector("link").setAttribute("href", getCookie("css2"));
+}
+
+function createGallery(data) {
+    var manga = data.meta;
+    var thumbs = data.thumbs;
+    var fullimg = data.fullimg;
+
+    function get_params() {
+        var params = {};
+
+        var tmp = window.location.search.substr(1).split('&');
+        for (var i in tmp) {
+            var tmp2 = tmp[i].split('=');
+            params[tmp2[0]] = decodeURIComponent(tmp2[1]);
+        }
+
+        var tmp = window.location.hash.substr(1).split('&');
+        for (var i in tmp) {
+            var tmp2 = tmp[i].split('=');
+            params[tmp2[0]] = decodeURIComponent(tmp2[1]);
+        }
+
+        if (thumbs) {
+            var page = parseInt(params.page);
+            if (isNaN(page)) page = 0;
+
+            if (page < 0)
+                params.page = thumbs.length;
+            else if (page == 0)
+                params.page = 'thumbs';
+            else if (page <= thumbs.length)
+                params.page = page;
+            else
+                params.page = 'thumbs';
+        }
+
+        return params;
+    }
+
+    var params = get_params();
+
+    function update_page() {
+        window.scrollTo(0, 0);
+
+        var params = get_params();
+
+        document.getElementById('loading').style.display = 'block';
+
+        if (!params['page'] || params['page'] == 'thumbs') {
+            var thumbsContainer = document.getElementById('thumbs');
+            while (thumbsContainer.firstChild) {
+                thumbsContainer.removeChild(thumbsContainer.firstChild);
+            }
+
+            thumbs.forEach(function (x, i) {
+                var title = '(Стр. ' + (i + 1) + ')';
+                var img = document.createElement('img');
+                img.src = x;
+                img.alt = title;
+                img.height = 140;
+                img.width = 100;
+                img.className = 'thumb';
+
+                var link = document.createElement('a');
+                link.href = '#page=' + (i + 1);
+                link.title = title;
+                link.appendChild(img);
+
+                thumbsContainer.appendChild(link);
+            });
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('thumbs').style.display = 'block';
+            document.getElementById('image').style.display = 'none';
+        }
+        else {
+            function imgpath(x) {
+                return fullimg[x - 1];
+            }
+
+            var p = parseInt(params['page']);
+
+            if (p > thumbs.length) {
+                window.location.hash = '#thumbs';
+                return;
+            }
+
+            var imageContainer = document.getElementById('image');
+            while (imageContainer.firstChild) {
+                imageContainer.removeChild(imageContainer.firstChild);
+            }
+
+            var imgOrVideo;
+            if(!~imgpath(p).indexOf('/manganew_mp4/')) {
+                imgOrVideo = document.createElement('img');
+                imgOrVideo.style.cssText = "max-width:1000px;background-color:white;";
+                imgOrVideo.src = imgpath(p);
+            }
+            else {
+                imgOrVideo = document.createElement('video');
+                imgOrVideo.style.cssText = "max-width:1000px;background-color:white;";
+                imgOrVideo.controls = true;
+                imgOrVideo.autoplay = true;
+                imgOrVideo.volume = 0.2;
+                imgOrVideo.innerHTML = '<source src="' + imgpath(p) + '" type="video/mp4">Ваш браузер не поддерживает встроенное видео.';
+            }
+
+            var link = document.createElement('a');
+            link.href = '#page=' + (p + 1);
+            link.title = 'Следующая страница';
+            link.appendChild(imgOrVideo);
+
+            imageContainer.appendChild(link);
+
+            if (p + 1 < thumbs.length) {
+                var img = document.createElement('img');
+                img.src = imgpath(p + 1);
+                img.style.display = 'none';
+                imageContainer.appendChild(img);
+            }
+
+            var dropdowns = document.getElementsByClassName('drop');
+            for (var i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].value = p;
+            }
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('thumbs').style.display = 'none';
+            document.getElementById('image').style.display = 'block';
+        }
+    }
+
+    setInterval(function () {
+        var tmp = window.location.hash;
+        if (tmp != this.lasthash) {
+            this.lasthash = tmp;
+            update_page();
+        }
+    }, 100);
+
+    var relatedMangas = document.getElementsByClassName('related_manga');
+    for (var i = 0; i < relatedMangas.length; i++) {
+        relatedMangas[i].addEventListener('change', function() {
+            document.location = '/manga/' + this.value + '#';
+        });
+    }
+
+    document.getElementById('related').addEventListener('change', function() {
+        window.location = '/online/' + this.value;
+    });
+
+    var drops = document.getElementsByClassName('drop');
+    for (var i = 0; i < drops.length; i++) {
+        drops[i].addEventListener('change', function() {
+            window.location.hash = '#page=' + this.value;
+        });
+    }
+
+    function change_page(inc) {
+        var params = get_params();
+        var page = parseInt(params.page);
+        if (isNaN(page)) page = 0;
+        page += inc;
+
+        if (page < 0)
+            window.location.hash = '#page=' + thumbs.length;
+        else if (page == 0)
+            window.location.hash = '#page=thumbs';
+        else if (page <= thumbs.length)
+            window.location.hash = '#page=' + page;
+        else
+            window.location.hash = '#page=thumbs';
+    }
+
+    document.addEventListener('keydown', function(ev) {
+        if (ev.keyCode == 37) {
+            change_page(-1);
+            return false;
+        }
+        else if (ev.keyCode == 39) {
+            change_page(1);
+            return false;
+        }
+    });
+
+    document.querySelector('.next a').addEventListener('click', function() {
+        change_page(1);
+    });
+
+    document.querySelector('.prev a').addEventListener('click', function() {
+        change_page(-1);
+    });
+
+    thumbs.forEach(function (x, i) {
+        var option = document.createElement('option');
+        option.value = i + 1;
+        option.text = 'Стр. ' + (i + 1);
+
+        var drops = document.getElementsByClassName('drop');
+        for (var j = 0; j < drops.length; j++) {
+            drops[j].appendChild(option.cloneNode(true));
+        }
+    });
+
+    var aSeries = document.querySelectorAll('a.a-series');
+    for (var i = 0; i < aSeries.length; i++) {
+        aSeries[i].title = manga.series_name + ' хентай';
+        aSeries[i].href = '/manga/new';
+    }
+
+    var aSeriesTitle = document.querySelectorAll('a.a-series-title');
+    for (var i = 0; i < aSeriesTitle.length; i++) {
+        aSeriesTitle[i].title = manga.series_name + ' - ' + manga.name + ' - скачать и смотреть онлайн';
+        aSeriesTitle[i].href = manga.url;
+    }
+
+    var aLanguage = document.querySelectorAll('a.a-language');
+    for (var i = 0; i < aLanguage.length; i++) {
+        aLanguage[i].title = manga.language + ' хентай';
+        aLanguage[i].href = '/lang/' + manga.language;
+        aLanguage[i].textContent = manga.language;
+    }
+
+    var series = document.getElementsByClassName('series');
+    for (var i = 0; i < series.length; i++) {
+        series[i].textContent = manga.series_name;
+    }
+
+    var mangaTitles = document.getElementsByClassName('manga-title');
+    for (var i = 0; i < mangaTitles.length; i++) {
+        mangaTitles[i].textContent = manga.name;
+    }
+
+    var postloads = document.getElementsByClassName('postload');
+    for (var i = 0; i < postloads.length; i++) {
+        postloads[i].style.display = 'block';
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var styleSwitches = document.getElementsByClassName("styleswitch");
+        for (var i = 0; i < styleSwitches.length; i++) {
+            styleSwitches[i].addEventListener("click", function(e) {
+                e.preventDefault();
+
+                document.querySelector("link").setAttribute("href", this.getAttribute('rel'));
+                setCookie("css2", this.getAttribute('rel'), 365);
+
+                return false;
+            });
+        }
+    });
+
+    update_page();
+    document.body.focus();
+}
+
+</script></head><body><style> /*
+ #image {
+    image-rendering: -webkit-optimize-contrast !important;
+    
+      filter: none; 
+     -webkit-filter: blur(0px); 
+     -moz-filter: blur(0px); 
+     -ms-filter: blur(0px);
+     filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='0');
+}
+*/
+</style><style>.siteLogo {
+    margin-top: 4px;
+    transform: rotate(4deg);
+    font-size: 24px;
+    font-weight: bold;
+    font-family: "Trebuchet MS", Arial;
+    text-shadow: 2px 2px 0 #8ebc50, 2px -2px 0 #8ebc50, -2px 2px 0 #8ebc50, -2px -2px 0 #8ebc50, 2px 0px 0 #8ebc50, 0px 2px 0 #8ebc50, -2px 0px 0 #8ebc50, 0px -2px 0 #8ebc50;
+    color: #FFFFFF;
+    width: 183px;
+}
+.siteLogo:hover {
+    color: #669922;
+    text-shadow: 2px 2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, -2px -2px 0 #fff, 2px 0px 0 #fff, 0px 2px 0 #fff, -2px 0px 0 #fff, 0px -2px 0 #fff;
+}</style><noscript><div style="font-size:40px;color:red;">Включите Ява Скрипт! Без него галерея работать не будет.</div></noscript><div id="header"><div id="left"><a href="https://x8.h-chan.me/news" title="Хентай-тян" style="background: none; text-decoration: none;"><div class="siteLogo">ХЕНТАЙ-ТЯН!</div><!--span(style='font-size:24px; color: white;') Хентай-тян--></a></div><div id="right"><select id="related" style="min-width:420px;"><option value="52347-cena-slavy-chast-1-str-1-21.html?cacheId=1744736754">Цена Славы - Часть 1 (стр 1 -21)</option><option value="53831-cena-slavy-chast-1-str.-1-19.html?cacheId=1757688541">Цена славы - часть 1 (стр. 1-19)</option><option value="53087-cena-slavy-chast-2-str-22-43.html?cacheId=1753183188">Цена Славы - Часть 2 (стр 22 - 43)</option><option value="53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566">Цена Славы - Часть 2 (стр 44 - 65)</option><option value="54080-cena-slavy-chast-2-str-20-39.html?cacheId=1760315666">Цена славы - часть 2 (стр. 20-39)</option></select></div></div><div id="wrap" style="padding-top:6px;"><div style="float:left;margin-left:14px;"><span id="ratig-layer"></span></div><div style="margin-right:220px;"><a class="styleswitch" href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566" rel="/templates/hentaichan_v2/css/viewonline.dark.css">черное</a> <a class="styleswitch" href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566" rel="/templates/hentaichan_v2/css/viewonline.css">белое</a></div><div id="content"><div class="header"></div><div class="chapter"><div class="left_nav"><ul class="postload" style="display: block;"><li class="dash"><a class="a-series series" title="Каталог манги хентай" href="https://x8.h-chan.me/manga/new">Каталог манги</a></li><li><a class="a-series-title manga-title" href="https://x8.h-chan.me/manga/53868-cena-slavy-chast-2-str-44-65.html" title="Каталог манги - Цена Славы - Часть 2 (стр 44 - 65) - скачать и смотреть онлайн">Цена Славы - Часть 2 (стр 44 - 65)</a></li></ul></div><div class="next postload" style="display: block;"><a class="btn">Вперед</a></div><div class="page postload" style="display: block;"><select class="drop"><option value="0">Превью</option><option value="1">Стр. 1</option><option value="2">Стр. 2</option><option value="3">Стр. 3</option><option value="4">Стр. 4</option><option value="5">Стр. 5</option><option value="6">Стр. 6</option><option value="7">Стр. 7</option><option value="8">Стр. 8</option><option value="9">Стр. 9</option><option value="10">Стр. 10</option><option value="11">Стр. 11</option><option value="12">Стр. 12</option><option value="13">Стр. 13</option><option value="14">Стр. 14</option><option value="15">Стр. 15</option><option value="16">Стр. 16</option><option value="17">Стр. 17</option><option value="18">Стр. 18</option><option value="19">Стр. 19</option><option value="20">Стр. 20</option><option value="21">Стр. 21</option><option value="22">Стр. 22</option><option value="23">Стр. 23</option><option value="24">Стр. 24</option></select></div><div class="prev postload" style="display: block;"><a class="btn">Назад</a></div></div><div style="clear:both;"></div><div id="thumbs" style="display: block;"><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=1" title="(Стр. 1)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/001.webp" alt="(Стр. 1)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=2" title="(Стр. 2)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/002.webp" alt="(Стр. 2)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=3" title="(Стр. 3)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/003.webp" alt="(Стр. 3)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=4" title="(Стр. 4)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/004.webp" alt="(Стр. 4)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=5" title="(Стр. 5)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/005.webp" alt="(Стр. 5)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=6" title="(Стр. 6)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/006.webp" alt="(Стр. 6)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=7" title="(Стр. 7)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/007.webp" alt="(Стр. 7)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=8" title="(Стр. 8)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/008.webp" alt="(Стр. 8)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=9" title="(Стр. 9)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/009.webp" alt="(Стр. 9)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=10" title="(Стр. 10)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/010.webp" alt="(Стр. 10)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=11" title="(Стр. 11)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/011.webp" alt="(Стр. 11)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=12" title="(Стр. 12)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/012.webp" alt="(Стр. 12)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=13" title="(Стр. 13)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/013.webp" alt="(Стр. 13)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=14" title="(Стр. 14)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/014.webp" alt="(Стр. 14)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=15" title="(Стр. 15)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/015.webp" alt="(Стр. 15)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=16" title="(Стр. 16)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/016.webp" alt="(Стр. 16)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=17" title="(Стр. 17)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/017.webp" alt="(Стр. 17)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=18" title="(Стр. 18)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/018.webp" alt="(Стр. 18)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=19" title="(Стр. 19)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/019.webp" alt="(Стр. 19)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=20" title="(Стр. 20)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/020.webp" alt="(Стр. 20)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=21" title="(Стр. 21)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/021.webp" alt="(Стр. 21)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=22" title="(Стр. 22)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/022.webp" alt="(Стр. 22)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=23" title="(Стр. 23)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/023.webp" alt="(Стр. 23)" height="140" width="100" class="thumb"></a><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566#page=24" title="(Стр. 24)"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/024.webp" alt="(Стр. 24)" height="140" width="100" class="thumb"></a></div><div id="image" style="display: none;"></div><div id="loading" style="display: none;">Загрузка... Если долго не может загрузится, попробуйте очистить кэш и перезагрузить браузер. Так же попробуйте в другом браузере.</div><div class="chapter"><div class="left_nav"><ul class="postload" style="display: block;"><li class="dash"><a class="a-series series" title="Каталог манги хентай" href="https://x8.h-chan.me/manga/new">Каталог манги</a></li><li><a class="a-series-title manga-title" href="https://x8.h-chan.me/manga/53868-cena-slavy-chast-2-str-44-65.html" title="Каталог манги - Цена Славы - Часть 2 (стр 44 - 65) - скачать и смотреть онлайн">Цена Славы - Часть 2 (стр 44 - 65)</a></li></ul></div><div class="next postload" style="display: block;"><a class="btn">Вперед</a></div><div class="page postload" style="display: block;"><select class="drop"><option value="0">Превью</option><option value="1">Стр. 1</option><option value="2">Стр. 2</option><option value="3">Стр. 3</option><option value="4">Стр. 4</option><option value="5">Стр. 5</option><option value="6">Стр. 6</option><option value="7">Стр. 7</option><option value="8">Стр. 8</option><option value="9">Стр. 9</option><option value="10">Стр. 10</option><option value="11">Стр. 11</option><option value="12">Стр. 12</option><option value="13">Стр. 13</option><option value="14">Стр. 14</option><option value="15">Стр. 15</option><option value="16">Стр. 16</option><option value="17">Стр. 17</option><option value="18">Стр. 18</option><option value="19">Стр. 19</option><option value="20">Стр. 20</option><option value="21">Стр. 21</option><option value="22">Стр. 22</option><option value="23">Стр. 23</option><option value="24">Стр. 24</option></select></div><div class="prev postload" style="display: block;"><a class="btn">Назад</a></div></div><div style="clear:both;"></div><script>var data = {
+        "meta": {
+            "name": "Цена Славы - Часть 2 (стр 44 - 65)",
+            "series_name": "Каталог манги",
+            "language": "На русском",
+            "url": "/manga/53868-cena-slavy-chast-2-str-44-65.html"
+        },
+        "thumbs": ['https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/001.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/002.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/003.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/004.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/005.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/006.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/007.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/008.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/009.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/010.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/011.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/012.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/013.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/014.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/015.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/016.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/017.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/018.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/019.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/020.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/021.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/022.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/023.webp', 'https://mimg4.imgschan.xyz/manganew_webp_thumbs/a/1758038566_arhiv-winrar/024.webp'],
+        "fullimg": ['https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/001.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/002.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/003.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/004.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/005.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/006.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/007.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/008.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/009.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/010.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/011.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/012.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/013.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/014.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/015.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/016.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/017.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/018.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/019.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/020.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/021.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/022.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/023.webp', 'https://mimg4.imgschan.xyz/manganew_webp/a/1758038566_arhiv-winrar/024.webp']
+    }
+createGallery(data)
+</script><div id="bottom"></div><div><div style="border:1px dashed #CCC;margin-bottom:7px;"></div>Похожая манга / Все главы<div><div style="width:78px;height:110px;float:left;border:0px solid black; margin:10px;"><a href="https://x8.h-chan.me/online/52347-cena-slavy-chast-1-str-1-21.html?cacheId=1744736754" title="Цена Славы - Часть 1 (стр 1 -21)"><img alt="Цена Славы - Часть 1 (стр 1 -21)" src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/000.jpg" height="110" width="78"></a><div style="font-size:13px;margin-top:3px;">Глава -21)</div></div><div style="width:78px;height:110px;float:left;border:0px solid black; margin:10px;"><a href="https://x8.h-chan.me/online/53831-cena-slavy-chast-1-str.-1-19.html?cacheId=1757688541" title="Цена славы - часть 1 (стр. 1-19)"><img alt="Цена славы - часть 1 (стр. 1-19)" src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/0000.jpg" height="110" width="78"></a><div style="font-size:13px;margin-top:3px;">Глава 1-19)</div></div><div style="width:78px;height:110px;float:left;border:0px solid black; margin:10px;"><a href="https://x8.h-chan.me/online/53087-cena-slavy-chast-2-str-22-43.html?cacheId=1753183188" title="Цена Славы - Часть 2 (стр 22 - 43)"><img alt="Цена Славы - Часть 2 (стр 22 - 43)" src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/000(1).jpg" height="110" width="78"></a><div style="font-size:13px;margin-top:3px;">Глава 43)</div></div><div style="width:78px;height:110px;float:left;border:0px solid black; margin:10px;"><a href="https://x8.h-chan.me/online/53868-cena-slavy-chast-2-str-44-65.html?cacheId=1758038566" title="Цена Славы - Часть 2 (стр 44 - 65)"><img alt="Цена Славы - Часть 2 (стр 44 - 65)" src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/001.jpg" height="110" width="78"></a><div style="font-size:13px;margin-top:3px;">Глава 65)</div></div><div style="width:78px;height:110px;float:left;border:0px solid black; margin:10px;"><a href="https://x8.h-chan.me/online/54080-cena-slavy-chast-2-str-20-39.html?cacheId=1760315666" title="Цена славы - часть 2 (стр. 20-39)"><img alt="Цена славы - часть 2 (стр. 20-39)" src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/0000(1).jpg" height="110" width="78"></a><div style="font-size:13px;margin-top:3px;">Глава 20-39)</div></div><br style="clear: both;"></div></div></div></div><div style="font-size: 14px;">1</div><div style="visibility:hidden;"><!-- LiveInternet counter--><script type="text/javascript">document.write("<a href='//www.liveinternet.ru/click' "+
+"target=_blank><img src='//counter.yadro.ru/hit?t24.6;r"+
+escape(document.referrer)+((typeof(screen)=="undefined")?"":
+";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+";"+Math.random()+
+"' alt='' title='LiveInternet: показано число посетителей за"+
+" сегодня' "+
+"border='0' width='88' height='15'><\\/a>")</script><a href="https://www.liveinternet.ru/click" target="_blank"><img src="./Цена Славы - Часть 2 (стр 44 - 65) читать онлайн_files/hit" alt="" title="LiveInternet: показано число посетителей за сегодня" border="0" width="88" height="15">&lt;\/a&gt;<!-- /LiveInternet--></a></div></body></html>
