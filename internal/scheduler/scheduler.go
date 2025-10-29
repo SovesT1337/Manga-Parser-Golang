@@ -152,6 +152,8 @@ func normalizeTagString(s string) string {
 		return s
 	}
 	s = strings.ToLower(s)
+	// replace hyphens with underscores to keep hashtags contiguous
+	s = strings.ReplaceAll(s, "-", "_")
 	s = strings.Join(strings.Fields(s), "_")
 	return s
 }
